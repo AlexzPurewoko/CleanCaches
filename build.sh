@@ -1,0 +1,1 @@
+gcc clean.c -o clean
