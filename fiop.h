@@ -2,7 +2,6 @@
  * Copyright (C) 2018 Alexzander Purwoko Widiantoro
  */
 #include <stdio.h>
-#include <conio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -32,7 +31,7 @@ size_t __fiolen(FILE *f){
 	return (len || count)?len+1:0;
 }
 // remove a path from index
-FILE *__fioremove(FILE *f, char *fpath, int start, int end){
+FILE *__fioremove(FILE *f, const char *fpath, int start, int end){
 	int len = __fiolen(f);
 	if(len == 0 || start > end || end == len)return f;
 	int _fpos = 0;
