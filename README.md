@@ -1,6 +1,6 @@
 # CleanCaches
 
-For cleaning a content in directory or deleting files that have been listed
+For cleaning a content in directory or deleting files that have been listed, but this application is applied only into ```Linux``` or ```POSIX``` terminals.
 
 ##How to build
 * Open terminal, and clone this repository, then go into this folder repository
@@ -19,5 +19,5 @@ For cleaning a content in directory or deleting files that have been listed
   for more information
 
 ##Notice
-* Please reconfigure macro ```DATA_PTH``` in file **clean.c** before building, because for file location that used to listing path to clean, default configuration is set to ```/etc/.cacheflist.cdt```
+* Please reconfigure file ```DataListPath``` before building, because for file location that used to listing path to clean, default configuration is set to ```"/etc/.cacheflist.cdt"```
 
