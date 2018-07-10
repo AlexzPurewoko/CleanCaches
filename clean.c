@@ -10,7 +10,7 @@
   */
 #include <stdio.h>
 #include <string.h>
-#include <conio.h>
+#include "conio.h"
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "colors.h"
@@ -23,20 +23,18 @@
 // because the method for cleaning folder and removing files is not same
 #define TP_FOLDERS 1
 #define TP_FILES 0
-// for store a list of path dirs/files for cleaning its content.
-#define DATA_PTH "/etc/.cacheflist.cdt"
 // wizard for adding absolutepath into list
-void add_data();
+void add_data(const char *DATA_PTH);
 // for operation cleaning
-void clean_caches(short showPrint);
+void clean_caches(const char *DATA_PTH, short showPrint);
 // display a help information
 void help();
 // display a list of absolute path 
-void list();
+void list(const char *DATA_PTH);
 // wizard for removing absolutepath from list
-void setup_remove();
+void setup_remove(const char *DATA_PTH);
 // clean dirs for selected position in an array format
-void clean_cachef(const char *list, short showPrint);
+void clean_cachef(const char *DATA_PTH, const char *list, short showPrint);
 // for displaying a list of absolutepath that have been listed.
 // This method is used by setup_remove() and list()
 void _nmlist(FILE *f, FIOread *rd);
@@ -45,24 +43,28 @@ void _nmlist(FILE *f, FIOread *rd);
 // argv : list of argument
 int main(const int argc, const char *argv[]){
 	const char *print_info = "Cache clean v" VERSION "\n" ANSI_COLOR_RED "Perintah Salah!" ANSI_COLOR_RESET "\n" ANSI_COLOR_GREEN "Silahkan ketik" ANSI_COLOR_RESET " " ANSI_COLOR_YELLOW  "clean -help" ANSI_COLOR_RESET " " ANSI_COLOR_GREEN "untuk info lanjut!" ANSI_COLOR_RESET "\n";
+	// for store a list of path dirs/files for cleaning its content.
+	const char *DATA_PTH[] = {
+		#include "DataListPath"
+	};
 	if(argc >= 2)
-		if(!strcmp(argv[1], "-add"))add_data();
+		if(!strcmp(argv[1], "-add"))add_data( DATA_PTH[0] );
 		else if(!strcmp(argv[1], "-a"))
-			if(argc > 2 && !strcmp(argv[2], "-v"))clean_caches(1);
-			else clean_caches(0);
-		else if(!strcmp(argv[1], "-av"))clean_caches(1);
+			if(argc > 2 && !strcmp(argv[2], "-v"))clean_caches(DATA_PTH[0], 1);
+			else clean_caches(DATA_PTH[0], 0);
+		else if(!strcmp(argv[1], "-av"))clean_caches(DATA_PTH[0], 1);
 		else if(!strcmp(argv[1], "-d"))
-			if(argc > 2 && !strcmp(argv[2], "-v"))clean_cachef(argv[3], 1);
-			else clean_cachef(argv[2], 0);
-		else if(!strcmp(argv[1], "-dv"))clean_cachef(argv[2], 1);
+			if(argc > 2 && !strcmp(argv[2], "-v"))clean_cachef( DATA_PTH[0], argv[3], 1);
+			else clean_cachef(DATA_PTH[0], argv[2], 0);
+		else if(!strcmp(argv[1], "-dv"))clean_cachef(DATA_PTH[0] ,argv[2], 1);
 		else if(!strcmp(argv[1], "-help"))help();
-		else if(!strcmp(argv[1], "-list"))list();
-		else if(!strcmp(argv[1], "-remove"))setup_remove();
+		else if(!strcmp(argv[1], "-list"))list(DATA_PTH[0]);
+		else if(!strcmp(argv[1], "-remove"))setup_remove( DATA_PTH[0] );
 		else printf(print_info);
 	else printf(print_info);
 	return 0;
 }
-void clean_cachef(const char *list, short showPrint){
+void clean_cachef(const char *DATA_PTH, const char *list, short showPrint){
 	int (*checkFile) (const char *);
 	checkFile = checkExists;
 	int check = (*checkFile)(DATA_PTH);
@@ -107,7 +109,7 @@ void clean_cachef(const char *list, short showPrint){
 	if(showPrint)getch();
 	printf("\n");
 }
-void setup_remove(){
+void setup_remove(const char *DATA_PTH){
 	clrscr();
 	FIOread rd;
 	int (*checkFile) (const char *);
@@ -134,11 +136,11 @@ void setup_remove(){
 	getch();
 	printf(ANSI_COLOR_MAGENTA "Are you sure to remove again?(y/n):" ANSI_COLOR_RESET );
 	int re = getch();
-	if(re == 'y')setup_remove();
+	if(re == 'y')setup_remove(DATA_PTH);
 	o:
 	clrscr();
 }
-void list(){
+void list( const char *DATA_PTH ){
 	int (*checkFile) (const char *);
 	checkFile = checkExists;
 	int check = (*checkFile)(DATA_PTH);
@@ -178,7 +180,7 @@ void _nmlist(FILE *f, FIOread *rd){
 	}
 	printf("\n" ANSI_COLOR_BLUE "-----------------------------------------------------" ANSI_COLOR_RESET "\n");
 }
-void clean_caches(short showPrint){
+void clean_caches(const char *DATA_PTH, short showPrint){
 	int (*checkFile) (const char *);
 	checkFile = checkExists;
 	int check = (*checkFile)(DATA_PTH);
@@ -228,7 +230,7 @@ void esetup_addn(FIOread *res){
 	res -> data[strlen(res -> data) - 1] = '\0';
 	clrscr();
 }
-void add_data(){
+void add_data(const char *DATA_PTH){
 	int (*checkFile) (const char *);
 	checkFile = checkExists;
 	int check = (*checkFile)(DATA_PTH);
@@ -247,7 +249,7 @@ void add_data(){
 	printf( ANSI_COLOR_GREEN "\nTerimakasih!\n" ANSI_COLOR_RESET );
 }
 void help(){
-	printf( ANSI_COLOR_GREEN "CleanCache -v" VERSION " By Alexzander Purwoko Widiantoro, Licensed under Apache License" ANSI_COLOR_RESET );
+	printf( ANSI_COLOR_GREEN "CleanCache -v" VERSION " By Alexzander Purwoko Widiantoro, Licensed under GPLv3" ANSI_COLOR_RESET );
 	printf( ANSI_COLOR_GREEN "\nBuild Time :" ANSI_COLOR_RESET " " ANSI_COLOR_YELLOW "%s at %s" ANSI_COLOR_RESET , __DATE__, __TIME__);
 	printf( ANSI_COLOR_GREEN "\n\nCleanCache is used to delete any files/directories from list" ANSI_COLOR_RESET );
 	printf( ANSI_COLOR_GREEN "\nPlease be carefull and read this help before using." ANSI_COLOR_RESET );
